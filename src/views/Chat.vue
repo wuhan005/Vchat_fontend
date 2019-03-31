@@ -12,12 +12,11 @@
 
                                     <el-col :xs="8" :sm="8" :md="7" :lg="5" :xl="5">
                                         <el-menu default-active="1">
-                                            <div class="avatar-area">
+                                            <div class="avatar-area" @click="onLogout">
                                                 <img :src="userinfo.Avatar" class="avatar"/>
                                                 <div class="avatar-name">{{userinfo.NickName.slice(0, 12)}}
                                                     <div class="avatar-mail">{{userinfo.Email}}</div>
                                                 </div>
-
                                             </div>
 
                                             <div class="line"></div>
@@ -133,12 +132,38 @@
 
 <script>
     import '@/assets/chatbox.css'
+    import utils from '@/utils'
+    import axios from "axios"
 
     export default {
         name: "Chat",
         data(){
             return{
                 'userinfo': JSON.parse(localStorage.getItem('userinfo'))
+            }
+        },
+
+        methods:{
+            onLogout: function(){
+                this.$confirm('你确定要登出吗？')
+                    .then(_ => {
+                        axios.get(
+                            utils.baseURL + '/User/Logout',
+                            {
+                                headers:{
+                                    'Authorization': localStorage.getItem('token')
+                                }
+                            }
+                        ).then((res) => {
+                            localStorage.removeItem('userinfo')
+                            localStorage.removeItem('token')
+
+                            this.$router.replace({
+                                path: '/login',
+                            })
+                        })
+                    })
+                    .catch(_ => {});
             }
         }
     }
