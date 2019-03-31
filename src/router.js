@@ -18,6 +18,12 @@ const router = new Router({
             component: () => import('@/views/Login.vue')
         },
 
+        {
+            path: '/register',
+            name: 'register',
+            component: () => import('@/views/Register.vue')
+        },
+
     ]
 })
 
@@ -26,7 +32,7 @@ router.beforeEach((to, from, next) => {
 
     if (!token || token == null) {
         // Not login
-        if(to.name !== 'login'){
+        if(to.name !== 'login' && to.name !== 'register'){
             next({
                 name: 'login',
                 query: {
@@ -38,7 +44,7 @@ router.beforeEach((to, from, next) => {
         next()
     }else{
         // Is login
-        if(to.name === 'login'){
+        if(to.name === 'login' || to.name === 'register'){
             next({
                 name: 'home'
             })
