@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-row type="flex" class="" justify="space-around">
-            <el-col :xs="24" :sm="20" :md="20" :lg="20" :xl="20">
+            <el-col :xs="24" :sm="23" :md="21" :lg="22" :xl="20">
                 <div class="grid-content bg-purple-light">
                     <el-container>
                         <el-main>
@@ -10,7 +10,7 @@
 
                                 <el-row>
 
-                                    <el-col :span="5">
+                                    <el-col :xs="8" :sm="8" :md="7" :lg="5" :xl="5">
                                         <el-menu default-active="1">
                                             <div class="avatar-area">
                                                 <img :src="userinfo.Avatar" class="avatar"/>
@@ -22,24 +22,16 @@
 
                                             <div class="line"></div>
 
-                                            <h4>当前在线</h4>
-                                            <div></div>
+                                            <h4 class="online-num">当前在线</h4>
 
-                                            <el-menu-item class="list-item">
-                                                <img src="https://cdn.github.red/wp-content/uploads/2019/01/Li4n0.jpg" class="list-avatar"/>
-                                                <span class="list-name">Li4n0</span>
-                                            </el-menu-item>
+                                            <!-- 在线列表 -->
+                                            <el-main class="online-list">
+                                                <el-menu-item class="list-item">
+                                                    <img src="https://cdn.github.red/wp-content/uploads/2019/01/Li4n0.jpg" class="list-avatar"/>
+                                                    <span class="list-name">Li4n0</span>
+                                                </el-menu-item>
 
-                                            <el-menu-item class="list-item">
-                                                <img src="https://cdn.github.red/wp-content/uploads/2019/01/Li4n0.jpg" class="list-avatar"/>
-                                                <span class="list-name">Li4n0</span>
-                                            </el-menu-item>
-
-                                            <el-menu-item class="list-item">
-                                                <img src="https://cdn.github.red/wp-content/uploads/2019/01/Li4n0.jpg" class="list-avatar"/>
-                                                <span class="list-name">Li4n0</span>
-                                            </el-menu-item>
-
+                                            </el-main>
 
                                         </el-menu>
 
@@ -48,8 +40,80 @@
 
                                     </el-col>
 
-                                    <el-col :span="18">
+                                    <el-col  :xs="16" :sm="16" :md="17" :lg="18" :xl="18">
                                         <h2 class="chat-title">这里是管理员可以设置的公告</h2>
+
+                                        <!-- 消息展示区 -->
+                                        <el-main class="chat-content-area">
+
+                                            <div class="leftd">
+                                                <span class="leftd_h">
+                                                    <img src="https://cdn.github.red/wp-content/uploads/2019/01/Li4n0.jpg" />
+                                                </span>
+
+                                                <div class="speech left" ng-class="speech left">
+                                                    <div class="chat-name">Li4n0</div>
+                                                    这个聊天室真牛逼，我来日一下。
+                                                </div>
+                                            </div>
+
+
+                                            <div class="rightd">
+                                                    <span class="rightd_h">
+                                                        <img :src="userinfo.Avatar"/>
+                                                    </span>
+                                                <div class="speech right" ng-class="speech left">
+                                                    放心，你日不动的
+                                                </div>
+                                            </div>
+
+                                            <div class="leftd">
+                                                <span class="leftd_h">
+                                                    <img src="https://cdn.github.red/wp-content/uploads/2019/01/Li4n0.jpg" />
+                                                </span>
+
+                                                <div class="speech left" ng-class="speech left">
+                                                    <div class="chat-name">Li4n0</div>
+                                                    。。。。你等着
+                                                </div>
+                                            </div>
+
+                                            <div class="leftd">
+                                                <span class="leftd_h">
+                                                    <img src="https://cdn.github.red/wp-content/uploads/2019/01/Li4n0.jpg" />
+                                                </span>
+
+                                                <div class="speech left" ng-class="speech left">
+                                                    <div class="chat-name">Li4n0</div>
+                                                    OK，getshell
+                                                </div>
+                                            </div>
+
+                                            <div class="rightd">
+                                                    <span class="rightd_h">
+                                                        <img :src="userinfo.Avatar"/>
+                                                    </span>
+                                                <div class="speech right" ng-class="speech left">
+                                                    卧槽？！
+                                                </div>
+                                            </div>
+                                            <div class="rightd">
+                                                    <span class="rightd_h">
+                                                        <img :src="userinfo.Avatar"/>
+                                                    </span>
+                                                <div class="speech right" ng-class="speech left">
+                                                    Li4n0 牛逼！
+                                                </div>
+                                            </div>
+
+
+                                        </el-main>
+
+                                        <div>
+                                            <el-input class="inputText" v-model="input" placeholder="说点什么吧~"></el-input>
+                                            <el-button type="primary" class="submit">发送</el-button>
+                                        </div>
+
                                     </el-col>
 
                                 </el-row>
@@ -68,6 +132,8 @@
 </template>
 
 <script>
+    import '@/assets/chatbox.css'
+
     export default {
         name: "Chat",
         data(){
@@ -79,10 +145,6 @@
 </script>
 
 <style scoped>
-    .button-right{
-        float:right;
-        margin-bottom: 20px;
-    }
 
     .logo{
         display: table-cell;
@@ -95,6 +157,18 @@
         text-align: center;
         padding: 10px;
         color: gray;
+    }
+
+    .chat-content-area{
+        height: 550px;
+    }
+
+    .online-list{
+        height: 420px;
+    }
+
+    .online-num{
+        margin-bottom: 10px;
     }
 
     .avatar{
@@ -147,6 +221,11 @@
 
     .chat-title{
         margin-left: 25px;
+    }
+
+    .inputText{
+        margin-left: 25px;
+        width: 80%;
     }
 
     .line{
