@@ -35,7 +35,7 @@
                                 </el-form>
                             </el-card>
                             <div class="copyright">
-                                <span>Made with ❤️ by E99p1ant.</span>
+                                <span>一个很小的在线聊天室 / Made with ❤️ by E99p1ant.</span>
                             </div>
                         </el-main>
                     </el-container>

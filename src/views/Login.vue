@@ -26,7 +26,7 @@
                                 </div>
                             </el-card>
                             <div class="copyright">
-                                <span>Made with ❤️ by E99p1ant.</span>
+                                <span>一个很小的在线聊天室 / Made with ❤️ by E99p1ant.</span>
                             </div>
                         </el-main>
                     </el-container>
@@ -68,11 +68,14 @@
                     if(res.data.code !== 200){
                         this.$message.error(res.data.msg);
                     }else{
+                        localStorage.setItem('token', res.data.data.Token)
+                        localStorage.setItem('userinfo', JSON.stringify(res.data.data.Userinfo))
+
                         this.$message({
-                            message: res.data.data,
+                            message: res.data.msg,
                             type: 'success',
                             onClose:() => {
-                                this.$router.replace({path: '/login'})
+                                this.$router.replace({path: '/chat'})
                             }
                         });
 
