@@ -16,7 +16,7 @@
                                     </el-form-item>
 
                                     <el-form-item label="昵称">
-                                        <el-input v-model="regForm.nickName"></el-input>
+                                        <el-input v-model="regForm.nickname"></el-input>
                                     </el-form-item>
 
                                     <el-form-item label="密码">
@@ -55,7 +55,7 @@
             return {
                 regForm: {
                     mail: '',
-                    nickName: '',
+                    nickname: '',
                     password: '',
                     inviteCode: ''
                 }
@@ -67,7 +67,24 @@
             },
 
             onReg: function(){
+                axios.post(
+                    utils.baseURL + '/User/Register',
+                    this.regForm,
+                ).then((res) => {
+                    // Check the callback
+                    if(res.data.code !== 200){
+                        this.$message.error(res.data.msg);
+                    }else{
+                        this.$message({
+                            message: res.data.data,
+                            type: 'success',
+                            onClose:() => {
+                                this.$router.replace({path: '/login'})
+                            }
+                        });
 
+                    }
+                })
             }
         }
     }

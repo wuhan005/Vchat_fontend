@@ -10,18 +10,18 @@
                                 <img class="logo" src="@/assets/Vchat_logo.png"/>
                                 <h2>登录</h2>
 
-                                <el-form ref="form" label-width="80px">
+                                <el-form ref="form" :model="loginForm" label-width="80px">
                                     <el-form-item label="E-Mail">
-                                        <el-input v-model="mail"></el-input>
+                                        <el-input v-model="loginForm.mail"></el-input>
                                     </el-form-item>
 
                                     <el-form-item label="密码">
-                                        <el-input show-password v-model="password"></el-input>
+                                        <el-input show-password v-model="loginForm.password"></el-input>
                                     </el-form-item>
                                 </el-form>
 
                                 <div class="button-right">
-                                    <el-button type="primary" round>登录</el-button>
+                                    <el-button type="primary" round @click="onLogin">登录</el-button>
                                     <el-button round @click="onReg">注册</el-button>
                                 </div>
                             </el-card>
@@ -37,14 +37,47 @@
 </template>
 
 <script>
+    import utils from '@/utils'
+    import axios from "axios"
+
     export default {
         name: "Login",
+        data(){
+            return{
+                loginForm: {
+                    mail: '',
+                    password: ''
+                }
+            }
+        },
+
         mounted() {
 
         },
         methods:{
             onReg: function(){
                 this.$router.push({path: '/register'})
+            },
+
+            onLogin: function(){
+                axios.post(
+                    utils.baseURL + '/User/Login',
+                    this.loginForm,
+                ).then((res) => {
+                    // Check the callback
+                    if(res.data.code !== 200){
+                        this.$message.error(res.data.msg);
+                    }else{
+                        this.$message({
+                            message: res.data.data,
+                            type: 'success',
+                            onClose:() => {
+                                this.$router.replace({path: '/login'})
+                            }
+                        });
+
+                    }
+                })
             }
         }
     }

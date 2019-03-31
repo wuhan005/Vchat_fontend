@@ -1,3 +1,3 @@
 export default {
-    baseURL: 'http://vchat.test/Api/'
+    baseURL: 'http://vchat.test/Api'
 }
