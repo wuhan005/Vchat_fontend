@@ -16,18 +16,26 @@
                                                 <img :src="userinfo.Avatar" class="avatar"/>
                                                 <div class="avatar-name">{{userinfo.NickName.slice(0, 12)}}
                                                     <div class="avatar-mail">{{userinfo.Email}}</div>
+
+                                                    <el-tag type="success" v-if="status === 'online'">在线</el-tag>
+                                                    <el-tag type="warning" v-if="status === 'wait'">
+                                                        <i class="el-icon-loading"></i>
+                                                        连接中...
+                                                    </el-tag>
+                                                    <el-tag type="info" v-if="status === 'outline'">离线</el-tag>
+
                                                 </div>
                                             </div>
 
                                             <div class="line"></div>
 
-                                            <h4 class="online-num">当前在线</h4>
+                                            <h4 class="online-num">当前在线：{{userlist.length}}人</h4>
 
                                             <!-- 在线列表 -->
-                                            <el-main class="online-list">
-                                                <el-menu-item class="list-item">
-                                                    <img src="https://cdn.github.red/wp-content/uploads/2019/01/Li4n0.jpg" class="list-avatar"/>
-                                                    <span class="list-name">Li4n0</span>
+                                            <el-main class="online-list" v-if="userlist.length > 0">
+                                                <el-menu-item class="list-item"  v-for="user in userlist">
+                                                    <img :src="user.Avatar" class="list-avatar"/>
+                                                    <span class="list-name">{{user.NickName}}</span>
                                                 </el-menu-item>
 
                                             </el-main>
@@ -40,77 +48,40 @@
                                     </el-col>
 
                                     <el-col  :xs="16" :sm="16" :md="17" :lg="18" :xl="18">
-                                        <h2 class="chat-title">这里是管理员可以设置的公告</h2>
+                                        <h2 class="chat-title">{{headerinfo}}</h2>
 
                                         <!-- 消息展示区 -->
                                         <el-main class="chat-content-area">
 
-                                            <div class="leftd">
-                                                <span class="leftd_h">
-                                                    <img src="https://cdn.github.red/wp-content/uploads/2019/01/Li4n0.jpg" />
-                                                </span>
-
-                                                <div class="speech left" ng-class="speech left">
-                                                    <div class="chat-name">Li4n0</div>
-                                                    这个聊天室真牛逼，我来日一下。
-                                                </div>
-                                            </div>
-
-
-                                            <div class="rightd">
-                                                    <span class="rightd_h">
-                                                        <img :src="userinfo.Avatar"/>
+                                            <!-- 单条消息 -->
+                                            <div v-for="msg in msgList">
+                                                <div class="leftd" v-if="msg.sender.ID !== userinfo.ID">
+                                                    <span class="leftd_h">
+                                                        <img :src="msg.sender.Avatar" />
                                                     </span>
-                                                <div class="speech right" ng-class="speech left">
-                                                    放心，你日不动的
+
+                                                    <div class="speech left">
+                                                        <div class="chat-name">{{msg.sender.NickName}}</div>
+                                                        {{msg.msg}}
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="rightd" v-if="msg.sender.ID === userinfo.ID">
+                                                        <span class="rightd_h">
+                                                            <img :src="msg.sender.Avatar"/>
+                                                        </span>
+                                                    <div class="speech right">
+                                                        {{msg.msg}}
+                                                    </div>
                                                 </div>
                                             </div>
-
-                                            <div class="leftd">
-                                                <span class="leftd_h">
-                                                    <img src="https://cdn.github.red/wp-content/uploads/2019/01/Li4n0.jpg" />
-                                                </span>
-
-                                                <div class="speech left" ng-class="speech left">
-                                                    <div class="chat-name">Li4n0</div>
-                                                    。。。。你等着
-                                                </div>
-                                            </div>
-
-                                            <div class="leftd">
-                                                <span class="leftd_h">
-                                                    <img src="https://cdn.github.red/wp-content/uploads/2019/01/Li4n0.jpg" />
-                                                </span>
-
-                                                <div class="speech left" ng-class="speech left">
-                                                    <div class="chat-name">Li4n0</div>
-                                                    OK，getshell
-                                                </div>
-                                            </div>
-
-                                            <div class="rightd">
-                                                    <span class="rightd_h">
-                                                        <img :src="userinfo.Avatar"/>
-                                                    </span>
-                                                <div class="speech right" ng-class="speech left">
-                                                    卧槽？！
-                                                </div>
-                                            </div>
-                                            <div class="rightd">
-                                                    <span class="rightd_h">
-                                                        <img :src="userinfo.Avatar"/>
-                                                    </span>
-                                                <div class="speech right" ng-class="speech left">
-                                                    Li4n0 牛逼！
-                                                </div>
-                                            </div>
-
 
                                         </el-main>
 
                                         <div>
-                                            <el-input class="inputText" v-model="input" placeholder="说点什么吧~"></el-input>
-                                            <el-button type="primary" class="submit">发送</el-button>
+                                            <el-input class="inputText" v-model="inputMsg" placeholder="说点什么吧~" @keyup.enter.native="onSendMsg"></el-input>
+                                            <el-button type="primary" class="submit" @click="onSendMsg" >发送</el-button>
                                         </div>
 
                                     </el-col>
@@ -139,11 +110,129 @@
         name: "Chat",
         data(){
             return{
-                'userinfo': JSON.parse(localStorage.getItem('userinfo'))
+                userinfo: JSON.parse(localStorage.getItem('userinfo')),
+                userlist: [],
+                status: 'wait',
+                headerinfo: '',
+
+                inputMsg: '',
+
+                msgList: []
             }
         },
 
+        created(){
+            this.initWebSocket()
+            this.getInfoHeader()
+        },
+
         methods:{
+            // Websocket
+            initWebSocket(){
+                // 尝试连接上 WS 服务器
+                const wsURL = utils.wsURL
+
+                this.websock = new WebSocket(wsURL + '?token=' + localStorage.getItem('token'))
+                this.websock.onopen = this.onConnect
+                this.websock.onerror = this.onError
+                this.websock.onmessage = this.onMessage
+                this.websock.onclose = this.onClose
+            },
+
+            onConnect(){
+                this.status = 'online'
+                this.$message({
+                    message: '成功连接服务器！',
+                    type: 'success'
+                });
+            },
+
+            onError(){
+                this.status = 'outline'
+                this.$message.error('连接服务器失败！');
+            },
+
+            onMessage(e){ //数据接收
+                const reciveData = JSON.parse(e.data);
+
+                if(reciveData.code === 200){
+                    if(reciveData.data.type === 'user_list'){
+                        // 更新用户列表
+                        this.userlist = reciveData.data.list
+                    }else if(reciveData.data.type === 'disconnect'){
+                        // 更新用户列表
+                        this.userlist = reciveData.data.list
+                    }else if(reciveData.data.type === 'message'){
+                        // 收到新的信息
+                        this.msgList.push({
+                            msg: reciveData.data.msg,
+                            sender: reciveData.data.from
+                        })
+                        this.scrollToBottom()
+                    }
+                }
+            },
+
+            onSend(type, data = null){//数据发送
+
+                if(type === 'disconnect'){
+                    const sendData = {
+                        type: 'disconnect',
+                        data: this.userinfo.ID
+                    }
+
+                    this.websock.send(JSON.stringify(sendData));
+
+                    try{
+                        this.websock.onclose()
+                    }catch (e) {
+                        console.log('close already')
+                    }
+
+                }else if(type === 'message'){
+                    const sendData = {
+                        type: 'message',
+                        data: {
+                            msg: data,
+                            token: localStorage.getItem('token')
+                        }
+                    }
+
+                    this.websock.send(JSON.stringify(sendData));
+                }
+
+            },
+
+            onClose(e){  //关闭
+                //console.log("connection closed (" + e.code + ")");
+            },
+
+            onSendMsg: function(){
+                try{
+                    this.onSend('message', this.inputMsg)
+                    this.inputMsg = ''
+                }catch (e) {
+                    console.log(e)
+                }
+
+            },
+
+            scrollToBottom: function(){
+                this.$nextTick(() => {
+                    const container = this.$el.querySelector(".chat-content-area");
+                    container.scrollTop = container.scrollHeight;
+                })
+            },
+
+            getInfoHeader: function(){
+                axios.get(utils.baseURL + '/Main/HeaderInfo')
+                    .then((res) => {
+                        if(res.data.code === 200){
+                            this.headerinfo = res.data.data
+                        }
+                    })
+            },
+
             onLogout: function(){
                 this.$confirm('你确定要登出吗？')
                     .then(_ => {
@@ -155,6 +244,8 @@
                                 }
                             }
                         ).then((res) => {
+                            this.onSend('disconnect')
+
                             localStorage.removeItem('userinfo')
                             localStorage.removeItem('token')
 

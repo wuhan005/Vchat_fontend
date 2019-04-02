@@ -52,8 +52,8 @@
         },
 
         mounted() {
-
         },
+
         methods:{
             onReg: function(){
                 this.$router.push({path: '/register'})
