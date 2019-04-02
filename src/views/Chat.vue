@@ -60,9 +60,8 @@
                                                         <img :src="msg.sender.Avatar" />
                                                     </span>
 
-                                                    <div class="speech left">
+                                                    <div class="speech left" v-html="msgFilter(msg.msg)">
                                                         <div class="chat-name">{{msg.sender.NickName}}</div>
-                                                        {{msg.msg}}
                                                     </div>
                                                 </div>
 
@@ -71,8 +70,7 @@
                                                         <span class="rightd_h">
                                                             <img :src="msg.sender.Avatar"/>
                                                         </span>
-                                                    <div class="speech right">
-                                                        {{msg.msg}}
+                                                    <div class="speech right" v-html="msgFilter(msg.msg)">
                                                     </div>
                                                 </div>
                                             </div>
@@ -83,6 +81,13 @@
                                             <el-input class="inputText" v-model="inputMsg" placeholder="说点什么吧~" @keyup.enter.native="onSendMsg"></el-input>
                                             <el-button type="primary" class="submit" @click="onSendMsg" >发送</el-button>
                                         </div>
+                                        <span class="footer">
+                                            <b>支持 ubb 代码</b>
+                                        </span>
+                                        <br>
+                                        <span class="footer">
+                                            请自觉遵守互联网相关的政策法规，严禁发布色情、暴力、反动的言论。
+                                        </span>
 
                                     </el-col>
 
@@ -105,6 +110,7 @@
     import '@/assets/chatbox.css'
     import utils from '@/utils'
     import axios from "axios"
+    import ubb2html from 'ubb2html'
 
     export default {
         name: "Chat",
@@ -233,6 +239,10 @@
                     })
             },
 
+            msgFilter: function(msg){
+                return ubb2html.decode(msg)
+            },
+
             onLogout: function(){
                 this.$confirm('你确定要登出吗？')
                     .then(_ => {
@@ -273,6 +283,14 @@
         text-align: center;
         padding: 10px;
         color: gray;
+    }
+
+    .footer{
+        font-size: 12px;
+        text-align: center;
+        padding: 10px;
+        color: gray;
+        margin-left: 15px;
     }
 
     .chat-content-area{
