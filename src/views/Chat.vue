@@ -122,13 +122,25 @@
 
                 inputMsg: '',
 
-                msgList: []
+                msgList: [],
+
+                timer: null
             }
         },
 
         created(){
             this.initWebSocket()
             this.getInfoHeader()
+        },
+
+        mounted(){
+            this.timer = setInterval( () => {
+                this.onSend('heartbeat')
+            }, 2000)
+        },
+
+        beforeDestroy() {
+            clearInterval(this.timer);
         },
 
         methods:{
@@ -245,6 +257,16 @@
                     }
 
                     this.websock.send(JSON.stringify(sendData));
+                }else if(type === 'heartbeat'){
+                    const sendData = {
+                        type: 'heartbeat',
+                        data: {
+                            msg: 'I am alive',
+                            token: localStorage.getItem('token')
+                        }
+                    }
+
+                    this.websock.send(JSON.stringify(sendData));
                 }
 
             },
@@ -255,8 +277,10 @@
 
             onSendMsg: function(){
                 try{
-                    this.onSend('message', this.inputMsg)
-                    this.inputMsg = ''
+                    if(this.inputMsg !== ''){
+                        this.onSend('message', this.inputMsg)
+                        this.inputMsg = ''
+                    }
                 }catch (e) {
                     console.log(e)
                 }
