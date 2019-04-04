@@ -7416,11 +7416,6 @@ typedarray@^0.0.6:
   resolved "http://registry.npm.taobao.org/typedarray/download/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-ubb2html@^0.0.1:
-  version "0.0.1"
-  resolved "http://registry.npm.taobao.org/ubb2html/download/ubb2html-0.0.1.tgz#5faa68f68f27bfd875701e49958280944c136ff5"
-  integrity sha1-X6po9o8nv9h1cB5JlYKAlEwTb/U=
-
 uglify-js@3.4.x:
   version "3.4.10"
   resolved "http://registry.npm.taobao.org/uglify-js/download/uglify-js-3.4.10.tgz#9ad9563d8eb3acdfb8d38597d2af1d815f6a755f"

@@ -110,7 +110,6 @@
     import '@/assets/chatbox.css'
     import utils from '@/utils'
     import axios from "axios"
-    import ubb2html from 'ubb2html'
 
     export default {
         name: "Chat",
@@ -133,6 +132,47 @@
         },
 
         methods:{
+            // ubb2html
+            ubb2html: function(argString){
+                var tString = argString;
+                if (this.isString(tString) && tString != '') {
+                    tString = tString.replace(/&/g, '$amp;');
+                    tString = tString.replace(/>/g, '&gt;');
+                    tString = tString.replace(/</g, '&lt;');
+                    tString = tString.replace(/\"/g, '&quot;');
+                    tString = tString.replace(/&amp;#91;/g, '$#91;');
+                    tString = tString.replace(/$amp;#93;/g, '$#93;');
+                    tString = tString.replace(/\[br\]/g, '<br />');
+
+                    tString = tString.replace(/\[1\](.*?)\[\/1\]/g, '<h1>$1</h1>');
+                    tString = tString.replace(/\[2\](.*?)\[\/2\]/g, '<h2>$1</h2>');
+                    tString = tString.replace(/\[3\](.*?)\[\/3\]/g, '<h3>$1</h3>');
+                    tString = tString.replace(/\[4\](.*?)\[\/4\]/g, '<h4>$1</h4>');
+                    tString = tString.replace(/\[5\](.*?)\[\/5\]/g, '<h5>$1</h5>');
+                    tString = tString.replace(/\[6\](.*?)\[\/6\]/g, '<h6>$1</h6>');
+
+                    tString = tString.replace(/\[p\](.*?)\[\/p\]/g, '<p>$1</p>');
+                    tString = tString.replace(/\[b\](.*?)\[\/b\]/g, '<b>$1</b>');
+                    tString = tString.replace(/\[i\](.*?)\[\/i\]/g, '<i>$1</i>');
+                    tString = tString.replace(/\[u\](.*?)\[\/u\]/g, '<u>$1</u>');
+                    tString = tString.replace(/\[ol\](.*?)\[\/ol\]/g, '<ol>&1</ol>');
+                    tString = tString.replace(/\[ul\](.*?)\[\/ul\]/g, '<ul>$1</ul>');
+                    tString = tString.replace(/\[li\](.*?)\[\/li\]/g, '<li>$1</li>');
+                    tString = tString.replace(/\[code\](.*?)\[\/code\]/g, '<div class="ubb_code">$1</div>');
+                    tString = tString.replace(/\[quote\](.*?)\[\/quote\]/g, '<div class="ubb_quote">$1</div>');
+                    tString = tString.replace(/\[color=(.*?)\](.*?)\[\/color\]/g, '<font style="color: $1">$2</font>');
+                    tString = tString.replace(/\[hilitecolor=(.*)\](.*?)\[\/hilitecolor\]/g, '<font style="background-color: $1">$2</font>');
+                    tString = tString.replace(/\[align=(.*)\](.*?)\[\/align\]/g, '<div style="text-align: $1">$2</div>');
+                    tString = tString.replace(/\[url=(.*)\](.*?)\[\/url\]/g, '<a href="$1" target="_blank">$2</a>');
+                    tString = tString.replace(/\[img\](.*?)\[\/img\]/g, '<img src="$1" style="width:200px;"/>');
+                }
+                return tString;
+            },
+
+            isString: function (obj){
+                return toString.call(obj) == '[object String]';
+            },
+
             // Websocket
             initWebSocket(){
                 // 尝试连接上 WS 服务器
@@ -240,7 +280,7 @@
             },
 
             msgFilter: function(msg){
-                return ubb2html.decode(msg)
+                return this.ubb2html(msg)
             },
 
             onLogout: function(){
@@ -294,7 +334,7 @@
     }
 
     .chat-content-area{
-        height: 550px;
+        height: 470px;
     }
 
     .online-list{
@@ -369,5 +409,9 @@
         width: 95%;
         background-color: gray;
         opacity: 0.2;
+    }
+
+    .sendImage{
+        width: 300px;
     }
 </style>
