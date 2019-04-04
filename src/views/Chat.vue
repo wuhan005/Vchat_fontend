@@ -60,8 +60,12 @@
                                                         <img :src="msg.sender.Avatar" />
                                                     </span>
 
-                                                    <div class="speech left" v-html="msgFilter(msg.msg)">
+
+                                                    <div class="speech left">
                                                         <div class="chat-name">{{msg.sender.NickName}}</div>
+                                                        <div v-html="msgFilter(msg.msg)">
+
+                                                        </div>
                                                     </div>
                                                 </div>
 
@@ -438,4 +442,10 @@
     .sendImage{
         width: 300px;
     }
+
+    .chat-name{
+        width: 100px;
+    }
+
+
 </style>
